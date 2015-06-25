@@ -1,5 +1,7 @@
 enable_service tacker git://git.openstack.org/stackforge/tacker.git master
 
+NETWORK_GATEWAY=15.0.0.1
+FIXED_RANGE=15.0.0.0/24
 # Nova
 disable_service n-net
 VIRT_DRIVER=libvirt
