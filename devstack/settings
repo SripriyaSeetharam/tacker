@@ -1,0 +1,53 @@
+enable_service tacker git://git.openstack.org/stackforge/tacker.git master
+
+# Nova
+disable_service n-net
+VIRT_DRIVER=libvirt
+
+enable_service n-novnc
+enable_service n-cauth
+
+enable_service q-l3
+#enable_service q-lbaas
+#enable_service q-fwaas
+
+enable_service q-svc
+enable_service q-agt
+enable_service q-dhcp
+enable_service q-meta
+enable_service neutron
+
+# Pip
+PIP_USE_MIRRORS=False
+USE_GET_PIP=1
+
+OFFLINE=False
+RECLONE=True
+
+# Logging
+LOGFILE=$DEST/logs/stack.sh.log
+SCREEN_LOGDIR=$DEST/logs/screen
+
+# heat is patched
+#HEAT_BRANCH=stable/kilo
+HEAT_REPO=https://github.com/yamahata/heat.git
+HEAT_BRANCH=bug/1451629
+
+# python-tackerclient isn't installable from pip
+LIBS_FROM_GIT=python-tackerclient
+
+sudo ovs-vsctl --may-exist add-br br-mgmt0
+sudo ifconfig br-mgmt0 inet 10.253.255.1/24
+sudo ifconfig br-mgmt0 up
+
+[[post-config|/$Q_PLUGIN_CONF_FILE]]
+[ml2]
+extension_drivers = port_security
+
+[ml2_type_flat]
+flat_networks = mgmtphysnet0
+
+[ovs]
+bridge_mappings = mgmtphysnet0:br-mgmt0
+
+
