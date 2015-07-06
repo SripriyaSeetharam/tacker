@@ -42,14 +42,3 @@ sudo ovs-vsctl --may-exist add-br br-mgmt0
 sudo ifconfig br-mgmt0 inet 10.253.255.1/24
 sudo ifconfig br-mgmt0 up
 
-[[post-config|/$Q_PLUGIN_CONF_FILE]]
-[ml2]
-extension_drivers = port_security
-
-[ml2_type_flat]
-flat_networks = mgmtphysnet0
-
-[ovs]
-bridge_mappings = mgmtphysnet0:br-mgmt0
-
-
