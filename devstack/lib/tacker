@@ -355,7 +355,7 @@ function _tacker_setup_keystone {
 function tacker_horizon_install {
     git_clone_by_name "tacker-horizon"
     setup_dev_lib "tacker-horizon"
-    sudo cp $DEST/openstack_dashboard_extensions/* $DEST/horizon/openstack_dashboard/enabled/
+    sudo cp /usr/local/lib/python2.7/dist-packages/tacker_horizon/openstack_dashboard_extensions/* $DEST/horizon/openstack_dashboard/enabled/
     sudo service apache2 restart
 }
 
