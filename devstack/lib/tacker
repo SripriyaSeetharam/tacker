@@ -370,7 +370,8 @@ function tacker_create_initial_network {
 	    neutron net-delete $i
     	done
     done
-
+    
+    sudo ovs-vsctl --may-exist add-br ${BR_MGMT}
 
     NET_MGMT_ID=$(neutron net-create --provider:network_type flat --provider:physical_network ${MGMT_PHYS_NET} --shared ${NET_MGMT} | awk '/ id /{print $4}')
     SUBNET_MGMT_ID=$(neutron subnet-create --name ${SUBNET_MGMT} --ip-version 4 --gateway ${NETWORK_GATEWAY_MGMT} ${NET_MGMT_ID} ${FIXED_RANGE_MGMT} | awk '/ id /{print $4}')
