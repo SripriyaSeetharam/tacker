@@ -38,11 +38,6 @@ HEAT_BRANCH=bug/1451629
 # python-tackerclient isn't installable from pip
 LIBS_FROM_GIT=python-tackerclient
 
-sudo ovs-vsctl --may-exist add-br br-mgmt0
-sudo ifconfig br-mgmt0 inet 10.253.255.1/24
-sudo ifconfig br-mgmt0 up
-
-
 MGMT_PHYS_NET=${MGMT_PHYS_NET:-mgmtphysnet0}
 BR_MGMT=${BR_MGMT:-br-mgmt0}
 NET_MGMT=${NET_MGMT:-net_mgmt}
