@@ -65,10 +65,8 @@ ENABLE_VERBOSE_LOG_LEVEL=True
 HEAT_REPO=https://github.com/yamahata/heat.git
 HEAT_BRANCH=bug/1451629
 
-# python-tackerclient isn't installable from pip
-LIBS_FROM_GIT=python-tackerclient
-# tacker-horizon isn't installable from pip
-LIBS_FROM_GIT=tacker-horizon
+# python-tackerclient and tacker-horizon isn't installable from pip
+LIBS_FROM_GIT=python-tackerclient,tacker-horizon
 
 MGMT_PHYS_NET=${MGMT_PHYS_NET:-mgmtphysnet0}
 BR_MGMT=${BR_MGMT:-br-mgmt0}
