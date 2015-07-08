@@ -43,7 +43,7 @@ enable_service h-api
 enable_service h-api-cfn
 enable_service h-api-cw
 
-enable_plugin tacker https://github.com/SripriyaSeetharam/tacker.git master
+enable_service tacker
 
 # Pip
 PIP_USE_MIRRORS=False
