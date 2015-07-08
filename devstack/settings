@@ -1,7 +1,24 @@
-enable_service tacker https://github.com/SripriyaSeetharam/tacker.git master
+# Neutron ML2 with OpenVSwitch
 
-NETWORK_GATEWAY=15.0.0.1
-FIXED_RANGE=15.0.0.0/24
+Q_PLUGIN=ml2
+Q_AGENT=openvswitch
+
+#PUBLIC NETWORK CONFIGURATION
+
+FLOATING_RANGE=${FLOATING_RANGE:-10.12.161.0/24}
+Q_FLOATING_ALLOCATION_POOL=${Q_FLOATING_ALLOCATION_POOL:-"start=10.12.161.198,end=10.12.161.201"}
+PUBLIC_NETWORK_NAME=${PUBLIC_NETWORK_NAME:-external}
+PUBLIC_NETWORK_GATEWAY=${PUBLIC_NETWORK_GATEWAY:-10.12.161.1}
+PUBLIC_PHYSICAL_NETWORK=${PUBLIC_PHYSICAL_NETWORK:-public}
+
+# Required for l3-agent to connect to external-network-bridge
+PUBLIC_BRIDGE=${PUBLIC_BRIDGE:-br-ext}
+
+#PRIVATE NETWORK CONFIGURATION
+
+NETWORK_GATEWAY=${NETWORK_GATEWAY:-15.0.0.1}
+FIXED_RANGE=${FIXED_RANGE:-15.0.0.0/24}
+
 # Nova
 disable_service n-net
 VIRT_DRIVER=libvirt
@@ -19,16 +36,29 @@ enable_service q-dhcp
 enable_service q-meta
 enable_service neutron
 
+# Heat
+enable_service heat
+enable_service h-eng
+enable_service h-api
+enable_service h-api-cfn
+enable_service h-api-cw
+
+enable_plugin tacker https://github.com/SripriyaSeetharam/tacker.git master
+
 # Pip
 PIP_USE_MIRRORS=False
 USE_GET_PIP=1
 
-OFFLINE=False
-RECLONE=True
+#OFFLINE=False
+#RECLONE=True
 
 # Logging
 LOGFILE=$DEST/logs/stack.sh.log
 SCREEN_LOGDIR=$DEST/logs/screen
+VERBOSE=True
+ENABLE_DEBUG_LOG_LEVEL=True
+ENABLE_VERBOSE_LOG_LEVEL=True
+
 
 # heat is patched
 #HEAT_BRANCH=stable/kilo
@@ -37,6 +67,8 @@ HEAT_BRANCH=bug/1451629
 
 # python-tackerclient isn't installable from pip
 LIBS_FROM_GIT=python-tackerclient
+# tacker-horizon isn't installable from pip
+LIBS_FROM_GIT=tacker-horizon
 
 MGMT_PHYS_NET=${MGMT_PHYS_NET:-mgmtphysnet0}
 BR_MGMT=${BR_MGMT:-br-mgmt0}
@@ -55,4 +87,3 @@ NET1=${NET1:-net1}
 SUBNET1=${SUBNET1:-subnet1}
 FIXED_RANGE1=${FIXED_RANGE1:-10.253.1.0/24}
 NETWORK_GATEWAY1=${NETWORK_GATEWAY1:-10.253.1.1}
-

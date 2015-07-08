@@ -223,6 +223,9 @@ function _create_tacker_conf_dir {
 # configure_tacker()
 # Set common config for all tacker server and agents.
 function configure_tacker {
+    iniset "/$Q_PLUGIN_CONF_FILE" ml2 extension_drivers port_security
+    iniset "/$Q_PLUGIN_CONF_FILE" ml2_type_flat flat_networks $PUBLIC_PHYSICAL_NETWORK,$MGMT_PHYS_NET
+    iniset "/$Q_PLUGIN_CONF_FILE" ovs bridge_mappings $PUBLIC_PHYSICAL_NETWORK:$PUBLIC_BRIDGE,$MGMT_PHYS_NET:$BR_MGMT
     _create_tacker_conf_dir
     iniset_rpc_backend tacker $TACKER_CONF
 
@@ -295,6 +298,8 @@ function configure_tacker {
     iniset $TACKER_CONF servicevm_heat stack_retry_wait 5
 
     _tacker_setup_rootwrap
+    echo "Creating bridge"
+    sudo ovs-vsctl --may-exist add-br ${BR_MGMT}
 }
 
 # Utility Functions
@@ -355,14 +360,15 @@ function _tacker_setup_keystone {
 function tacker_horizon_install {
     git_clone_by_name "tacker-horizon"
     setup_dev_lib "tacker-horizon"
-    sudo cp /usr/local/lib/python2.7/dist-packages/tacker_horizon/openstack_dashboard_extensions/* $DEST/horizon/openstack_dashboard/enabled/
+    sudo cp $DEST/tacker-horizon/openstack_dashboard_extensions/* $DEST/horizon/openstack_dashboard/enabled/
     sudo service apache2 restart
+    sleep 3
 }
 
 function tacker_create_initial_network {
     # create necessary networks
     # prepare network
-
+    echo "Deleting networks"
     for net in ${NET_MGMT} ${NET0} ${NET1} ${NET2}
     do
     	for i in $(neutron net-list | awk "/${net}/{print \$2}")
@@ -371,8 +377,7 @@ function tacker_create_initial_network {
     	done
     done
     
-    sudo ovs-vsctl --may-exist add-br ${BR_MGMT}
-
+    echo "Creating networks"
     NET_MGMT_ID=$(neutron net-create --provider:network_type flat --provider:physical_network ${MGMT_PHYS_NET} --shared ${NET_MGMT} | awk '/ id /{print $4}')
     SUBNET_MGMT_ID=$(neutron subnet-create --name ${SUBNET_MGMT} --ip-version 4 --gateway ${NETWORK_GATEWAY_MGMT} ${NET_MGMT_ID} ${FIXED_RANGE_MGMT} | awk '/ id /{print $4}')
     NET0_ID=$(neutron net-create --shared ${NET0} | awk '/ id /{print $4}')
@@ -380,6 +385,7 @@ function tacker_create_initial_network {
     NET1_ID=$(neutron net-create --shared ${NET1} | awk '/ id /{print $4}')
     SUBNET1_ID=$(neutron subnet-create --name ${SUBNET1} --ip-version 4 --gateway ${NETWORK_GATEWAY1} ${NET1_ID} ${FIXED_RANGE1} | awk '/ id /{print $4}')
 
+    echo "Assign ip ADDR"
     sudo ifconfig ${BR_MGMT} inet 0.0.0.0
     sudo ifconfig ${BR_MGMT} inet ${NETWORK_GATEWAY_MGMT_IP}
 }

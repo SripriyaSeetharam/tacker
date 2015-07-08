@@ -1,0 +1,21 @@
+[[local|localrc]]
+############################################################
+# Customize the following HOST_IP based on your installation
+############################################################
+HOST_IP=10.18.161.163
+
+ADMIN_PASSWORD=devstack
+MYSQL_PASSWORD=devstack
+RABBIT_PASSWORD=devstack
+SERVICE_PASSWORD=$ADMIN_PASSWORD
+SERVICE_TOKEN=devstack
+
+############################################################
+# Customize the following section based on your installation
+############################################################
+
+enable_plugin tacker git://github.com/SripriyaSeetharam/tacker.git master
+
+disable_service tempest
+
+
